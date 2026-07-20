@@ -57,6 +57,9 @@ export default function MonthView() {
         <h2>{formatMonthTitle(monthDate)}</h2>
         <button onClick={() => setMonthDate((d) => addMonths(d, 1))}>Luna urmatoare →</button>
         <button className="secondary-btn" onClick={() => setMonthDate(new Date())}>Azi</button>
+        <button className="add-course-btn" onClick={() => setModalState({ initialDate: new Date() })}>
+          + Adauga curs
+        </button>
       </div>
 
       <div className="legend">

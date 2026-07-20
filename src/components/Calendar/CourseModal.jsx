@@ -124,7 +124,15 @@ export default function CourseModal({ initialDate, course, onClose, onSaved }) {
       }
       onSaved()
     } catch (err) {
-      setError(err.message || 'Nu am putut salva cursul.')
+      const isRaceConditionOverlap = err.code === '23P01' && (err.message || '').includes('courses_no_room_overlap')
+      if (isRaceConditionOverlap) {
+        setError(
+          'Sala tocmai a fost rezervata de altcineva, chiar in acest interval (coliziune detectata la salvare, ' +
+          'din doua programari simultane). Inchide fereastra, reincarca calendarul si alege alta sala sau alt interval.'
+        )
+      } else {
+        setError(err.message || 'Nu am putut salva cursul.')
+      }
     } finally {
       setBusy(false)
     }
