@@ -15,10 +15,12 @@
 
 * { box-sizing: border-box; }
 
+html, body, #root { height: 100%; }
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
+  min-height: 100vh;
 }
 
 button {
@@ -98,9 +100,11 @@ input:focus, select:focus, textarea:focus {
 .navbar-user { display: flex; align-items: center; gap: 12px; font-size: 13px; color: rgba(255,255,255,0.8); }
 .navbar-user .link-btn { color: white; text-decoration: underline; }
 
-.app-main { padding: 20px 32px 48px; width: 100%; }
+.app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+.app-main { padding: 20px 32px 48px; width: 100%; flex: 1; display: flex; flex-direction: column; min-height: 0; }
 
 /* ---------- Calendar ---------- */
+.calendar-page { display: flex; flex-direction: column; flex: 1; min-height: 0; }
 .calendar-toolbar { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
 .calendar-toolbar h2 { flex: 1; text-align: center; margin: 0; color: var(--navy); font-size: 20px; }
 
@@ -117,7 +121,9 @@ input:focus, select:focus, textarea:focus {
   background: var(--border);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  overflow: hidden;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 }
 .weekday-header {
   background: var(--navy);
@@ -129,7 +135,6 @@ input:focus, select:focus, textarea:focus {
 }
 .day-cell {
   background: var(--card);
-  min-height: 110px;
   min-width: 0;
   padding: 6px;
   cursor: pointer;

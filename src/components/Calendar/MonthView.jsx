@@ -16,6 +16,7 @@ export default function MonthView() {
   const [dayDetail, setDayDetail] = useState(null) // Date | null - ziua pentru care aratam lista completa
 
   const grid = useMemo(() => buildMonthGrid(monthDate), [monthDate])
+  const numWeeks = grid.length / 7
 
   function showHoverDetails(e, course) {
     const rect = e.currentTarget.getBoundingClientRect()
@@ -69,7 +70,7 @@ export default function MonthView() {
 
       {loading && <div className="loading-bar">Se incarca cursurile...</div>}
 
-      <div className="month-grid">
+      <div className="month-grid" style={{ gridTemplateRows: `auto repeat(${numWeeks}, minmax(90px, 1fr))` }}>
         {WEEKDAY_LABELS.map((d) => (
           <div key={d} className="weekday-header">{d}</div>
         ))}

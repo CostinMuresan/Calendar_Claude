@@ -13,7 +13,7 @@ function AppShell() {
   if (!user) return <Login />
 
   return (
-    <>
+    <div className="app-shell">
       <Navbar />
       <main className="app-main">
         <Routes>
@@ -26,7 +26,7 @@ function AppShell() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
-    </>
+    </div>
   )
 }
 
