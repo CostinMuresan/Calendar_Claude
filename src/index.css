@@ -82,6 +82,27 @@ input:focus, select:focus, textarea:focus {
 .auth-info { background: var(--accent-soft); color: var(--accent); padding: 8px 10px; border-radius: 6px; font-size: 13px; }
 .auth-hint { margin: 4px 0 0; text-align: center; font-size: 12px; color: var(--text-muted); }
 
+.date-input-ro-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
+.date-input-ro-wrapper input[type="text"] { width: 100%; padding-right: 34px; }
+.date-input-ro-icon {
+  position: absolute;
+  right: 8px;
+  font-size: 14px;
+  pointer-events: none;
+  opacity: 0.7;
+}
+.date-input-ro-native {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 30px;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
 .loading-screen { display:flex; align-items:center; justify-content:center; height:100vh; color: var(--text-muted); }
 
 /* ---------- Navbar ---------- */

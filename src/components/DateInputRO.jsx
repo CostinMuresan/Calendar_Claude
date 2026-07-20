@@ -5,6 +5,11 @@ import { parse, isValid, format } from 'date-fns'
 // limba/regiunea setata in browser-ul utilizatorului. Valoarea transmisa prin
 // props/onChange ramane in format ISO (yyyy-MM-dd), pentru compatibilitate cu
 // baza de date si cu restul aplicatiei.
+//
+// Pe langa tastarea directa a cifrelor, are si o iconita de calendar care
+// deschide selectorul vizual nativ al browser-ului (suprapus, invizibil,
+// peste iconita) - alegerea din calendar completeaza automat campul text,
+// deja formatat zz/ll/aaaa.
 export default function DateInputRO({ value, onChange, required, disabled }) {
   const [text, setText] = useState('')
 
@@ -40,16 +45,35 @@ export default function DateInputRO({ value, onChange, required, disabled }) {
     }
   }
 
+  function handlePickerChange(e) {
+    const iso = e.target.value // input nativ type=date da direct format yyyy-MM-dd
+    if (!iso) return
+    onChange(iso)
+  }
+
   return (
-    <input
-      type="text"
-      inputMode="numeric"
-      placeholder="zz/ll/aaaa"
-      value={text}
-      onChange={handleChange}
-      required={required}
-      disabled={disabled}
-      maxLength={10}
-    />
+    <div className="date-input-ro-wrapper">
+      <input
+        type="text"
+        inputMode="numeric"
+        placeholder="zz/ll/aaaa"
+        value={text}
+        onChange={handleChange}
+        required={required}
+        disabled={disabled}
+        maxLength={10}
+      />
+      <span className="date-input-ro-icon" aria-hidden="true">📅</span>
+      {!disabled && (
+        <input
+          type="date"
+          className="date-input-ro-native"
+          value={value || ''}
+          onChange={handlePickerChange}
+          tabIndex={-1}
+          aria-label="Deschide calendar"
+        />
+      )}
+    </div>
   )
 }
