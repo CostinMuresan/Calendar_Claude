@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { parse, isValid, format } from 'date-fns'
 
 // Camp de data cu afisare fixa in format romanesc zz/ll/aaaa, indiferent de
@@ -6,12 +6,12 @@ import { parse, isValid, format } from 'date-fns'
 // props/onChange ramane in format ISO (yyyy-MM-dd), pentru compatibilitate cu
 // baza de date si cu restul aplicatiei.
 //
-// Pe langa tastarea directa a cifrelor, are si o iconita de calendar care
-// deschide selectorul vizual nativ al browser-ului (suprapus, invizibil,
-// peste iconita) - alegerea din calendar completeaza automat campul text,
-// deja formatat zz/ll/aaaa.
+// Butonul cu iconita de calendar deschide selectorul vizual nativ al
+// browser-ului prin showPicker() - un buton normal, usor de apasat, nu o
+// zona mica suprapusa (asta cauza dificultatea de a-l "nimeri" anterior).
 export default function DateInputRO({ value, onChange, required, disabled }) {
   const [text, setText] = useState('')
+  const nativeRef = useRef(null)
 
   useEffect(() => {
     if (value) {
@@ -51,6 +51,22 @@ export default function DateInputRO({ value, onChange, required, disabled }) {
     onChange(iso)
   }
 
+  function openPicker() {
+    if (disabled) return
+    const el = nativeRef.current
+    if (!el) return
+    if (typeof el.showPicker === 'function') {
+      try {
+        el.showPicker()
+        return
+      } catch (err) {
+        // browser a refuzat showPicker (rar) - fallback mai jos
+      }
+    }
+    el.focus()
+    el.click()
+  }
+
   return (
     <div className="date-input-ro-wrapper">
       <input
@@ -63,17 +79,25 @@ export default function DateInputRO({ value, onChange, required, disabled }) {
         disabled={disabled}
         maxLength={10}
       />
-      <span className="date-input-ro-icon" aria-hidden="true">📅</span>
-      {!disabled && (
-        <input
-          type="date"
-          className="date-input-ro-native"
-          value={value || ''}
-          onChange={handlePickerChange}
-          tabIndex={-1}
-          aria-label="Deschide calendar"
-        />
-      )}
+      <button
+        type="button"
+        className="date-input-ro-icon-btn"
+        onClick={openPicker}
+        disabled={disabled}
+        aria-label="Deschide calendar"
+        title="Deschide calendar"
+      >
+        📅
+      </button>
+      <input
+        ref={nativeRef}
+        type="date"
+        className="date-input-ro-native"
+        value={value || ''}
+        onChange={handlePickerChange}
+        tabIndex={-1}
+        aria-hidden="true"
+      />
     </div>
   )
 }

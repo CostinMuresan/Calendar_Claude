@@ -84,21 +84,31 @@ input:focus, select:focus, textarea:focus {
 
 .date-input-ro-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
 .date-input-ro-wrapper input[type="text"] { width: 100%; padding-right: 34px; }
-.date-input-ro-icon {
+.date-input-ro-icon-btn {
   position: absolute;
-  right: 8px;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  color: var(--text-muted);
   font-size: 14px;
-  pointer-events: none;
-  opacity: 0.7;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
+.date-input-ro-icon-btn:hover { background: var(--accent-soft); }
+.date-input-ro-icon-btn:disabled { cursor: not-allowed; opacity: 0.4; }
 .date-input-ro-native {
   position: absolute;
-  right: 0;
-  top: 0;
-  width: 30px;
-  height: 100%;
+  width: 1px;
+  height: 1px;
   opacity: 0;
-  cursor: pointer;
+  pointer-events: none;
   border: none;
   padding: 0;
 }
