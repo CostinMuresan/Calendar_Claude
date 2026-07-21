@@ -59,13 +59,13 @@ export default function CourseModal({ initialDate, course, onClose, onSaved }) {
     setForm((f) => ({ ...f, [field]: value }))
   }
 
-  async function findRoomConflict() {
-    if (!form.room) return null
+  async function findFieldConflict(field, value) {
+    if (!value) return null
 
     let query = supabase
       .from('courses')
       .select('id, name, start_date, end_date, start_time, end_time')
-      .eq('room', form.room)
+      .eq(field, value)
       .lte('start_date', form.end_date)
       .gte('end_date', form.start_date)
 
@@ -93,18 +93,29 @@ export default function CourseModal({ initialDate, course, onClose, onSaved }) {
     setBusy(true)
 
     try {
-      const conflict = await findRoomConflict()
-      if (conflict) {
+      const roomConflict = await findFieldConflict('room', form.room)
+      if (roomConflict) {
         setError(
-          `Sala "${form.room}" este deja rezervata in aceasta perioada de cursul "${conflict.name}" ` +
-          `(${conflict.start_date} - ${conflict.end_date}${conflict.start_time ? `, ${conflict.start_time.slice(0, 5)}-${conflict.end_time?.slice(0, 5)}` : ''}). ` +
+          `Sala "${form.room}" este deja rezervata in aceasta perioada de cursul "${roomConflict.name}" ` +
+          `(${roomConflict.start_date} - ${roomConflict.end_date}${roomConflict.start_time ? `, ${roomConflict.start_time.slice(0, 5)}-${roomConflict.end_time?.slice(0, 5)}` : ''}). ` +
           `Alege alta sala sau alt interval.`
         )
         setBusy(false)
         return
       }
+
+      const trainerConflict = await findFieldConflict('trainer', form.trainer)
+      if (trainerConflict) {
+        setError(
+          `Trainerul "${form.trainer}" este deja programat in aceasta perioada la cursul "${trainerConflict.name}" ` +
+          `(${trainerConflict.start_date} - ${trainerConflict.end_date}${trainerConflict.start_time ? `, ${trainerConflict.start_time.slice(0, 5)}-${trainerConflict.end_time?.slice(0, 5)}` : ''}). ` +
+          `Alege alt trainer sau alt interval.`
+        )
+        setBusy(false)
+        return
+      }
     } catch (err) {
-      setError(err.message || 'Nu am putut verifica disponibilitatea salii.')
+      setError(err.message || 'Nu am putut verifica disponibilitatea salii/trainerului.')
       setBusy(false)
       return
     }
@@ -124,14 +135,21 @@ export default function CourseModal({ initialDate, course, onClose, onSaved }) {
       }
       onSaved()
     } catch (err) {
-      const isRaceConditionOverlap = err.code === '23P01' && (err.message || '').includes('courses_no_room_overlap')
-      if (isRaceConditionOverlap) {
+      const rawMessage = err.message || ''
+      const isRoomRace = err.code === '23P01' && rawMessage.includes('courses_no_room_overlap')
+      const isTrainerRace = err.code === '23P01' && rawMessage.includes('courses_no_trainer_overlap')
+      if (isRoomRace) {
         setError(
           'Sala tocmai a fost rezervata de altcineva, chiar in acest interval (coliziune detectata la salvare, ' +
           'din doua programari simultane). Inchide fereastra, reincarca calendarul si alege alta sala sau alt interval.'
         )
+      } else if (isTrainerRace) {
+        setError(
+          'Trainerul tocmai a fost programat de altcineva, chiar in acest interval (coliziune detectata la salvare, ' +
+          'din doua programari simultane). Inchide fereastra, reincarca calendarul si alege alt trainer sau alt interval.'
+        )
       } else {
-        setError(err.message || 'Nu am putut salva cursul.')
+        setError(rawMessage || 'Nu am putut salva cursul.')
       }
     } finally {
       setBusy(false)
